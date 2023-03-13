@@ -1,0 +1,14 @@
+become_pass:
+
+admin_user:
+admin_pass: "{{become_pass}}"
+
+ancillary_user:
+ancillary_user_pass:
+
+build_user:
+build_user_pass:
+
+crypto_partition_password:
+
+root_password:

@@ -1,0 +1,23 @@
+---
+
+- name: Create the boot partition
+  parted:
+    device: "/dev/{{disk_scheme.device}}"
+    number: "{{disk_scheme.boot_part.partition}}"
+    state: present
+    fs_type: ext4
+    part_end: "{{disk_scheme.boot_part.size}}"
+
+- name: create a ext4 filesystem on root
+  filesystem:
+    fstype: ext4
+    dev: "/dev/{{disk_scheme.device}}{{disk_scheme.boot_part.partition}}"
+
+- name: Create the crypt partition
+  parted:
+    device: "/dev/{{disk_scheme.device}}"
+    number: "{{disk_scheme.crypt_part.partition}}"
+    state: present
+    fs_type: ext4
+    part_start: "{{disk_scheme.boot_part.size}}"
+    part_end: "{{disk_scheme.crypt_part.size}}"

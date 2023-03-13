@@ -1,0 +1,16 @@
+---
+
+- hosts: all
+  roles:
+    - { role: partition_disks }
+    - { role: luks_setup }
+    - { role: create_filesystem }
+    - { role: pacstrap }
+    - { role: genfstab }
+    - { role: timezone }
+    - { role: hostname }
+    - { role: mkinit }
+    - { role: grub }
+    - { role: networking }
+    - { role: sshd_config }
+    - { role: initial_user }

@@ -1,0 +1,10 @@
+---
+
+- name: replace the HOOKS with needed boot hooks in mkinitcpio.conf
+  lineinfile:
+    regexp: "^HOOKS="
+    line: "HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block encrypt lvm2 filesystems fsck)"
+    path: /mnt/etc/mkinitcpio.conf
+
+- name: mkinitcpio -P
+  command: arch-chroot /mnt mkinitcpio -P

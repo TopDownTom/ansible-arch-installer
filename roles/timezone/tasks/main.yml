@@ -1,0 +1,27 @@
+---
+
+- name: set hwclock
+  command: "arch-chroot /mnt hwclock --systohc"
+  register: set_hwclock
+  changed_when: set_hwclock.rc > 0
+
+- name: set timezone
+  file:
+    state: link
+    src: "/mnt/usr/share/zoneinfo/{{timezone}}"
+    dest: "/mnt/etc/localtime"
+
+- name: set locale.gen
+  template:
+    src: locale.gen
+    dest: /mnt/etc/locale.gen
+
+- name: locale-gen
+  command: "arch-chroot /mnt locale-gen"
+  register: set_locale_gen
+  changed_when: set_locale_gen.rc > 0
+
+- name: set locale
+  template:
+    src: locale
+    dest: /mnt/etc/locale.conf

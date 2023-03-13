@@ -1,0 +1,47 @@
+---
+
+- name: check if dotfiles clone already exist
+  stat:
+    path: /usr/local/etc/user_configs
+  register: dotfiles_exist_check
+
+- name: set perms to {{admin_user}}:users if dotfiles already exist
+  file:
+    path: /usr/local/etc/dotfiles/
+    owner: "{{admin_user}}"
+    group: users
+    recurse: true
+  become: true
+  when: dotfiles_exist_check.stat.exists is true
+
+- name: clone scripts, dotfiles
+  git:
+    repo: "https://github.com/topdowntom/{{repos.repo}}.git"
+    dest: "/usr/local/etc/{{repos.dir}}"
+    refspec: '+refs/pull/*:refs/heads/*'
+  loop:
+    - { repo: dotfiles, dir: user_configs }
+    - { repo: scripts, dir: scripts }
+  loop_control:
+    loop_var: repos
+
+- name: get script files
+  command: ls /usr/local/etc/scripts/
+  register: script_files
+  changed_when: script_files.rc > 0
+
+- name: symlink scripts
+  file:
+    src: "/usr/local/etc/scripts/{{script}}"
+    dest: "/usr/local/sbin/{{script}}"
+    state: link
+  loop: "{{script_files.stdout_lines}}"
+  loop_control:
+    loop_var: script
+  become: true
+
+- name: clone yay-bin
+  git:
+    repo: "https://aur.archlinux.org/yay-bin.git"
+    dest: "/usr/local/etc/builds/yay"
+    refspec: '+refs/pull/*:refs/heads/*'

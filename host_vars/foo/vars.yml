@@ -1,0 +1,34 @@
+ansible_host:
+ansible_user:
+ansible_become_pass: "{{become_pass}}"
+hostname:
+
+timezone: America/New_York
+
+admin_user_groups: wheel, users
+ancillary_user_groups: users
+
+disk_scheme:
+  device:
+  num_partitions: [1, 2]
+  boot_part: {size: 1GiB, partition: 1}
+  crypt_part: {size: 100%, partition: 2}
+
+crypto_become_pass: "{{crypto_partition_password}}"
+crypt_mount_name:
+crypt_volume_group_name:
+crypt_swap_size: 1 #GB
+crypt_root_size: 20 #GB
+
+# if english is your primary language, this is likely what you want
+locale_gen: "en_US.UTF-8 UTF-8"
+locale: "LANG=en_US.UTF-8"
+
+# add lines to this list if you want "fake" DNS resolution
+# TODO: use this over the template in the hosts template
+hosts_ips: |
+  127.0.0.1 localhost
+  127.0.1.1 localhost
+  ::1 localhost
+  ff02::1      ip6-allnodes
+  ff02::2      ip6-allrouters

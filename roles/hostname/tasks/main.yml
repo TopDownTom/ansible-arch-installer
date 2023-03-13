@@ -1,0 +1,17 @@
+---
+
+- name: Set /etc/hostname
+  template:
+    src: hostname.j2
+    dest: /mnt/etc/hostname
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Set /etc/hosts
+  template:
+    src: hosts.j2
+    dest: /mnt/etc/hosts
+    mode: 0644
+    owner: root
+    group: root

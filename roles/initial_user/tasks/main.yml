@@ -1,0 +1,26 @@
+---
+
+- name: check for {{admin_user}}
+  command: "arch-chroot /mnt grep {{admin_user}} /etc/passwd"
+  register: find_user
+  failed_when: find_user.rc > 1
+
+- name: create {{admin_user}}
+  command: "arch-chroot /mnt useradd -m -g users -G wheel --password {{admin_pass | password_hash('sha512', 65534 | random(seed=inventory_hostname) | string)}} {{admin_user}}"
+  when: find_user.rc == 1
+
+- name: create admin user .ssh dir
+  file:
+    path: "/mnt/home/{{admin_user}}/.ssh"
+    owner: 1000
+    group: users
+    mode: 0700
+    state: directory
+
+- name: allow wheel users to sudo
+  template:
+    src: sudoers.j2
+    dest: "/mnt/etc/sudoers.d/{{hostname}}"
+    owner: root
+    group: root
+    mode: 0440

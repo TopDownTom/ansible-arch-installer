@@ -1,0 +1,64 @@
+---
+
+- name: set ParallelDownloads in pacman.conf
+  lineinfile:
+    path: /etc/pacman.conf
+    regexp: '^#ParallelDownloads ='
+    line: "ParallelDownloads = {{parallel_downloads | default(5)}}"
+  become: true
+
+- name: get NATIVE package list
+  get_url:
+    url: https://raw.githubusercontent.com/TopDownTom/dotfiles/master/native-pkglist-t470.txt
+    dest: /tmp/native-pkglist-t470.txt
+    mode: '0660'
+
+- name: get FOREIGN package list
+  get_url:
+    url: https://raw.githubusercontent.com/TopDownTom/dotfiles/master/foreign-pkglist-t470.txt
+    dest: /tmp/foreign-pkglist-t470.txt
+    mode: '0664'
+
+- name: capture the NATIVE packages
+  command: cat /tmp/native-pkglist-t470.txt
+  register: needed_native_packages
+
+- name: capture the FOREIGN packages
+  command: cat /tmp/foreign-pkglist-t470.txt
+  register: needed_foreign_packages
+
+- name: check if yay-bin is installed
+  command: pacman -Q yay
+  register: yay_pkg
+  failed_when: yay_pkg.rc > 1
+
+- block: # make if not installed
+  - name: make yay-bin, but dont install
+    command: makepkg -s
+    args:
+      chdir: /usr/local/etc/builds/yay
+
+  - name: find the binary zst
+    find:
+      paths: /usr/local/etc/builds/yay
+      patterns: 'yay-bin-*.pkg.tar.zst'
+    register: yay_binary
+
+  - name: install yay-bin
+    pacman:
+      name: "{{yay_binary.files.0.path}}"
+      state: latest
+      update_cache: true
+    become: true
+  when: yay_pkg.rc > 0
+
+# TODO: i hate this
+- name: install needed pacman packages
+  shell: cat /tmp/native-pkglist-t470.txt | pacman -Syu --noconfirm --needed -
+  become: true
+
+# TODO: i hate this
+- name: install needed AUR packages
+  shell: cat /tmp/foreign-pkglist-t470.txt | yay -Syu --noconfirm --needed -
+  become_user: "{{build_user}}"
+  become: true

@@ -1,0 +1,4 @@
+---
+
+- name: enable sshd
+  command: arch-chroot /mnt systemctl enable sshd

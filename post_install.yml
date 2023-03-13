@@ -1,0 +1,9 @@
+---
+
+- hosts: all
+  roles:
+    - { role: create_users }
+    - { role: create_dirs }
+    - { role: repos }
+    - { role: package_install }
+    - { role: stow }

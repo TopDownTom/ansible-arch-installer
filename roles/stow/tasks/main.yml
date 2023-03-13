@@ -1,0 +1,65 @@
+---
+
+- name: remove conflict files
+  file:
+    path: "{{user_conflicts}}"
+    state: absent
+  loop:
+    - "/home/{{admin_user}}/.bashrc"
+    - "/home/{{admin_user}}/.bash_profile"
+  loop_control:
+    loop_var: user_conflicts
+
+- name: remove root conflict files
+  file:
+    path: "{{root_conflicts}}"
+    state: absent
+  loop:
+    - /etc/pulse/default.pa
+    - /etc/pulse/system.pa
+    - /etc/tlp.conf
+  loop_control:
+    loop_var: root_conflicts
+  become: true
+
+# TODO: make this a loop
+- name: stow {{admin_user}} user files
+  shell: stow -vt ~ {cmus,dmenu,dunst,homeDirFiles,i3,newsboat,nvim,picom,ranger,redshift,ssh,st,texmf,user-dirs,userSystemD,vim}
+  args:
+    chdir: /usr/local/etc/user_configs/
+
+- name: stow root files
+  command: stow -vt / rootItems
+  args:
+    chdir: /usr/local/etc/user_configs/
+  become: true
+
+- name: set perms on rootItems
+  file:
+    path: /usr/local/etc/user_configs/rootItems
+    owner: root
+    group: root
+    recurse: true
+  become: true
+
+- name: set nvim to vi
+  file:
+    src: /usr/bin/nvim
+    dest: /usr/bin/vi
+    state: link
+  become: true
+
+- name: set root vimrc to use our config
+  lineinfile:
+    insertafter: eof
+    line: source /usr/local/etc/user_configs/vim/.config/vim/vimrc
+    path: /etc/vimrc
+  become: true
+
+- name: make suckless st
+  script: /usr/local/etc/scripts/stMake
+  become: true
+
+- name: make suckless dmenu
+  script: /usr/local/etc/scripts/dmenuMake
+  become: true

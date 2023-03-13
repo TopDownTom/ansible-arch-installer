@@ -1,0 +1,16 @@
+---
+
+- name: create config dirs
+  file:
+    dest: "/usr/local/etc/{{etc_dirs}}"
+    state: directory
+    mode: 0750
+    owner: "{{admin_user}}"
+    group: users
+  loop:
+    - builds
+    - user_configs
+    - scripts
+  loop_control:
+    loop_var: etc_dirs
+  become: true

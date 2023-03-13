@@ -1,0 +1,4 @@
+---
+
+- name: Enable NetworkManager
+  command: arch-chroot /mnt systemctl enable NetworkManager

@@ -1,0 +1,52 @@
+---
+
+- block: # no_log: true
+  - name: Create users
+    user:
+      name: "{{ userinfo.user }}"
+      password: "{{ userinfo.pass | password_hash('sha512', 65534 | random(seed=inventory_hostname) | string) }}"
+      uid: "{{ userinfo.uid }}"
+      shell: "{{ userinfo.shell | default('/bin/bash') }}"
+      groups: "{{ userinfo.other_groups }}"
+      generate_ssh_key: "{{userinfo.ssh_key}}"
+    loop:
+      - { user: "{{ admin_user }}", pass: "{{ admin_pass }}", uid: 1000, ssh_key: true, other_groups: "{{admin_user_groups | default('')}}" }
+      - { user: "{{ ancillary_user }}", pass: "{{ ancillary_user_pass }}", uid: 1001, ssh_key: false, other_groups: "{{ancillary_user_groups | default('')}}" }
+      - { user: "{{ build_user }}", pass: "{{ build_user_pass }}", uid: 1002, ssh_key: false, other_groups: "{{build_user_groups | default('')}}" }
+    loop_control:
+      loop_var: userinfo
+
+  - name: Ensure gid=uid
+    group:
+      name: "{{ groupinfo.user }}"
+      gid: "{{ groupinfo.gid }}"
+    loop:
+      - { user: "{{ admin_user }}", gid: 1000 }
+      - { user: "{{ ancillary_user }}", gid: 1001 }
+      - { user: "{{ build_user }}", gid: 1002 }
+    loop_control:
+      loop_var: groupinfo
+
+  - name: Ensure sudoers files included
+    lineinfile:
+      path: /etc/sudoers
+      regex: "#includedir /etc/sudoers.d"
+      line: "#includedir /etc/sudoers.d"
+
+  - name: Place sudoers.d file
+    template:
+      src: sudoers.conf
+      dest: "/etc/sudoers.d/{{ hostname }}"
+      mode: 0440
+      owner: root
+      group: root
+
+  - name: Place {{build_user}} sudoers.d file
+    template:
+      src: build_user.conf
+      dest: "/etc/sudoers.d/{{ hostname }}_{{build_user}}"
+      mode: 0440
+      owner: root
+      group: root
+  no_log: true
+  become: true

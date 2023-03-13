@@ -1,0 +1,18 @@
+---
+
+- name: get the UUID for /dev/{{disk_scheme.device}}{{disk_scheme.crypt_part.partition}}
+  shell: "blkid /dev/{{disk_scheme.device}}{{disk_scheme.crypt_part.partition}} | awk '{print $2}' | cut -d'\"' -f2 -"
+  register: cryptlvm_uuid
+  changed_when: cryptlvm_uuid.rc > 0
+
+- name: grub CMDLINE fix
+  lineinfile:
+    regex: "^GRUB_CMDLINE_LINUX=\""
+    line: "GRUB_CMDLINE_LINUX=\"loglevel=3 cryptdevice=UUID={{cryptlvm_uuid.stdout}}:{{crypt_mount_name}} rw ot=/dev/mapper/{{crypt_volume_group_name}}-root\""
+    path: /mnt/etc/default/grub
+
+- name: install grub on your drive
+  command: "arch-chroot /mnt grub-install --target=i386-pc /dev/{{disk_scheme.device}}"
+
+- name: make grub config
+  command: arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
