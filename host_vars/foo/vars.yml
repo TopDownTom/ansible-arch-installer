@@ -4,6 +4,7 @@ ansible_become_pass: "{{become_pass}}"
 hostname:
 
 timezone: America/New_York
+country: US
 
 admin_user_groups: wheel, users
 ancillary_user_groups: users
@@ -25,10 +26,9 @@ locale_gen: "en_US.UTF-8 UTF-8"
 locale: "LANG=en_US.UTF-8"
 
 # add lines to this list if you want "fake" DNS resolution
-# TODO: use this over the template in the hosts template
 hosts_ips: |
   127.0.0.1 localhost
   127.0.1.1 localhost
-  ::1 localhost
-  ff02::1      ip6-allnodes
-  ff02::2      ip6-allrouters
+  ::1       localhost
+  ff02::1   ip6-allnodes
+  ff02::2   ip6-allrouters
