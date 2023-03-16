@@ -8,7 +8,7 @@
 - name: set timezone
   file:
     state: link
-    src: "/mnt/usr/share/zoneinfo/{{timezone}}"
+    src: "/usr/share/zoneinfo/{{timezone}}"
     dest: "/mnt/etc/localtime"
 
 - name: set locale.gen
