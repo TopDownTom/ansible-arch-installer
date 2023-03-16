@@ -2,17 +2,8 @@
 
 - name: check if dotfiles clone already exist
   stat:
-    path: /usr/local/etc/user_configs
+    path: /usr/local/etc/user_configs/.git
   register: dotfiles_exist_check
-
-- name: set perms to {{admin_user}}:users if dotfiles already exist
-  file:
-    path: /usr/local/etc/dotfiles/
-    owner: "{{admin_user}}"
-    group: users
-    recurse: true
-  become: true
-  when: dotfiles_exist_check.stat.exists is true
 
 - name: clone scripts, dotfiles
   git:
@@ -24,6 +15,11 @@
     - { repo: scripts, dir: scripts }
   loop_control:
     loop_var: repos
+  when: dotfiles_exist_check.stat.exists is false
+
+- name: Set perms on rootItems
+  command: chown -R root:root /usr/local/etc/user_configs/rootItems
+  become: true
 
 - name: get script files
   command: ls /usr/local/etc/scripts/
