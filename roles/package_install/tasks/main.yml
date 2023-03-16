@@ -7,6 +7,19 @@
     line: "ParallelDownloads = {{parallel_downloads | default(5)}}"
   become: true
 
+- name: place reflector config file
+  template:
+    src: reflector.j2
+    dest: /etc/xdg/reflector/reflector.conf
+  become: true
+
+- name: start and enable reflector
+  systemd:
+    name: reflector.service
+    state: started
+    enabled: true
+  become: true
+
 - name: get NATIVE package list
   get_url:
     url: https://raw.githubusercontent.com/TopDownTom/dotfiles/master/native-pkglist-t470.txt
