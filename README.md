@@ -50,7 +50,7 @@ The post_install.yml playbook is all userspace configuration. By this point you 
 Two approaches:
 
 - You can use any standard [arch linux ISO](https://archlinux.org/download/), put it onto a drive, and boot into it. Then, from another device with the ability to run Ansible you can run these plays. This works well if you're installing onto a VM.
-- Download the [arch linux TDTLIVE ISO](https://topdowntom.space/tech) from the linked page, add it to a drive, then boot into it. This works best if you're running the install on the same device you're installing onto.
+- Download the [arch linux TDTLIVE ISO](https://topdowntom.space/tech) from the linked page, add it to a drive, then boot into it. This works best if you're running the install on the same device you're installing onto. When you're booted in, run the script get-repo.sh.
 
 We need to have passwordless SSH access to that machine. From the booted ISO, change the root password. It can be something trivial, this bootable iso session is ephemeral:
 
