@@ -1,24 +1,38 @@
+# the IP address of your target. use 'localhost' if you're running this on the tdt archiso
 ansible_host:
+# pick a suitable ansible user, later to become the admin user
 ansible_user:
-ansible_become_pass: "{{become_pass}}"
+ansible_become_pass: "{{become_pass}}" # contained in the vault
+# pick a hostname
 hostname:
 
+# change these if need-be
 timezone: America/New_York
 country: US
 
+# these are pretty standard base groups you'll likely want users in
+# wheel group gets sudo privs
 admin_user_groups: wheel, users
 ancillary_user_groups: users
 
 disk_scheme:
+  # the naming scheme of the device, i.e. sda for /dev/sda, or nvme0n1, etc.
   device:
   num_partitions: [1, 2]
+  # its unlikely you'd need more than a 1G boot partition, but I wouldn't recommend making it smaller either
   boot_part: {size: 1GiB, partition: 1}
   crypt_part: {size: 100%, partition: 2}
 
-crypto_become_pass: "{{crypto_partition_password}}"
+crypto_become_pass: "{{crypto_partition_password}}" # contained in the vault
+# the name your encrypted container will be mounted as, i.e. /dev/mapper/<crypt_mount_name>
 crypt_mount_name:
+# the name of your volume group
 crypt_volume_group_name:
+# the swap partition size, in GB
 crypt_swap_size: 1 #GB
+# the root partition size, in GB
+# i'd suggest leaving this as-is, since the $HOME partition later gets 100%FREE
+# on a clean install of this play the root partition is only 12GB
 crypt_root_size: 20 #GB
 
 # if english is your primary language, this is likely what you want

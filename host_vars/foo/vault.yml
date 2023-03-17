@@ -1,14 +1,20 @@
+# the ansible_user sudo password
 become_pass:
 
+# the admin user credentials. this is the ansible_user
 admin_user:
 admin_pass: "{{become_pass}}"
 
+# a secondary user which has no sudo privileges
 ancillary_user:
 ancillary_user_pass:
 
+# a build user for makepkg and other package building
 build_user:
 build_user_pass:
 
+# the encrypted volume password
 crypto_partition_password:
 
+# the root password
 root_password:
