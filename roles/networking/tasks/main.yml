@@ -2,3 +2,6 @@
 
 - name: Enable NetworkManager
   command: arch-chroot /mnt systemctl enable NetworkManager
+
+- name: Enable reflector
+  command: arch-chroot /mnt systemctl enable reflector
