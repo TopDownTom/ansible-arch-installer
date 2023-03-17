@@ -24,3 +24,8 @@
     owner: root
     group: root
     mode: 0440
+
+- name: copy ansible play dir to {{admin_user}} home
+  copy:
+    src: "{{playbook_dir}}"
+    dest: "/mnt/home/{{admin_user}}/"
