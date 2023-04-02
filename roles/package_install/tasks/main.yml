@@ -22,13 +22,13 @@
 
 - name: get NATIVE package list
   get_url:
-    url: https://raw.githubusercontent.com/TopDownTom/dotfiles/master/native-pkglist-t470.txt
+    url: https://raw.githubusercontent.com/TopDownTom/dotfiles/master/pkglists/native-pkglist-t470.txt
     dest: /tmp/native-pkglist-t470.txt
     mode: '0660'
 
 - name: get FOREIGN package list
   get_url:
-    url: https://raw.githubusercontent.com/TopDownTom/dotfiles/master/foreign-pkglist-t470.txt
+    url: https://raw.githubusercontent.com/TopDownTom/dotfiles/master/pkglists/foreign-pkglist-t470.txt
     dest: /tmp/foreign-pkglist-t470.txt
     mode: '0664'
 
