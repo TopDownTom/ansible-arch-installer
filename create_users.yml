@@ -1,5 +1,6 @@
 ---
 
-- hosts: all
+- name: Create system users
+  hosts: all
   roles:
     - { role: create_users }

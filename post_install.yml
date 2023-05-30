@@ -1,6 +1,7 @@
 ---
 
-- hosts: all
+- name: Install a user environment
+  hosts: all
   roles:
     - { role: create_users }
     - { role: create_dirs }

@@ -1,5 +1,6 @@
 ---
 
-- hosts: all
+- name: Create the system filesystem
+  hosts: all
   roles:
     - { role: create_filesystem }

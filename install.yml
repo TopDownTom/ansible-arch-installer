@@ -1,6 +1,7 @@
 ---
 
-- hosts: all
+- name: Install an encrypted Arch Linux system
+  hosts: all
   roles:
     - { role: partition_disks }
     - { role: luks_setup }

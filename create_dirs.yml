@@ -1,5 +1,6 @@
 ---
 
-- hosts: all
+- name: Create sys directories
+  hosts: all
   roles:
     - { role: create_dirs }

@@ -1,5 +1,6 @@
 ---
 
-- hosts: all
+- name: Run pacstrap
+  hosts: all
   roles:
     - { role: pacstrap }

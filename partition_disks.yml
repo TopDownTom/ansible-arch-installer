@@ -1,5 +1,6 @@
 ---
 
-- hosts: all
+- name: Partition the disk
+  hosts: all
   roles:
     - { role: partition_disks }

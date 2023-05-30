@@ -1,5 +1,6 @@
 ---
 
-- hosts: all
+- name: Run sshd_config plays
+  hosts: all
   roles:
     - { role: sshd_config }

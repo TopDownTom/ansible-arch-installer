@@ -1,5 +1,6 @@
 ---
 
-- hosts: all
+- name: Generate the FS table
+  hosts: all
   roles:
     - { role: genfstab }

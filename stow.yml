@@ -1,5 +1,6 @@
 ---
 
-- hosts: all
+- name: Run stow role
+  hosts: all
   roles:
     - { role: stow }

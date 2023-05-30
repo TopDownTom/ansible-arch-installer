@@ -1,5 +1,6 @@
 ---
 
-- hosts: all
+- name: Set up repositories for user configs/scripts
+  hosts: all
   roles:
     - { role: repos }
