@@ -1,14 +1,14 @@
 ---
 
-- name: check if dotfiles clone already exist
-  stat:
+- name: Check if dotfiles clone already exist
+  ansible.builtin.stat:
     path: /usr/local/etc/user_configs/.git
   register: dotfiles_exist_check
 
-- name: clone scripts, dotfiles
-  git:
-    repo: "https://github.com/topdowntom/{{repos.repo}}.git"
-    dest: "/usr/local/etc/{{repos.dir}}"
+- name: Clone scripts, dotfiles
+  ansible.builtin.git:
+    repo: "https://github.com/topdowntom/{{ repos.repo }}.git"
+    dest: "/usr/local/etc/{{ repos.dir }}"
     refspec: '+refs/pull/*:refs/heads/*'
   loop:
     - { repo: dotfiles, dir: user_configs }
@@ -18,26 +18,26 @@
   when: dotfiles_exist_check.stat.exists is false
 
 - name: Set perms on rootItems
-  command: chown -R root:root /usr/local/etc/user_configs/rootItems
+  ansible.builtin.command: chown -R root:root /usr/local/etc/user_configs/rootItems
   become: true
 
-- name: get script files
-  command: ls /usr/local/etc/scripts/
+- name: Get script files
+  ansible.builtin.command: ls /usr/local/etc/scripts/
   register: script_files
   changed_when: script_files.rc > 0
 
-- name: symlink scripts
-  file:
-    src: "/usr/local/etc/scripts/{{script}}"
-    dest: "/usr/local/sbin/{{script}}"
+- name: Symlink scripts
+  ansible.builtin.file:
+    src: "/usr/local/etc/scripts/{{ script }}"
+    dest: "/usr/local/sbin/{{ script }}"
     state: link
-  loop: "{{script_files.stdout_lines}}"
+  loop: "{{ script_files.stdout_lines }}"
   loop_control:
     loop_var: script
   become: true
 
-- name: clone yay-bin
-  git:
+- name: Clone yay-bin
+  ansible.builtin.git:
     repo: "https://aur.archlinux.org/yay-bin.git"
     dest: "/usr/local/etc/builds/yay"
     refspec: '+refs/pull/*:refs/heads/*'

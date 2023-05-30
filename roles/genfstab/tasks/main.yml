@@ -1,11 +1,11 @@
 ---
 
-- name: slurp chroot fstab
-  slurp:
+- name: Slurp chroot fstab
+  ansible.builtin.slurp:
     src: /mnt/etc/fstab
   register: fstab
 
 # when condition to ensure idempotency, and not overwrite an existing fstab
-- name: generate the chroot fstab
-  shell: genfstab -U /mnt >> /mnt/etc/fstab
+- name: Generate the chroot fstab
+  ansible.builtin.shell: genfstab -U /mnt >> /mnt/etc/fstab
   when: (fstab.content | b64decode).splitlines() | length <= 4

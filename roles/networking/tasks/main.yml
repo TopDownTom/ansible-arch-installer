@@ -1,7 +1,7 @@
 ---
 
 - name: Enable NetworkManager
-  command: arch-chroot /mnt systemctl enable NetworkManager
+  ansible.builtin.command: arch-chroot /mnt systemctl enable NetworkManager
 
 - name: Enable reflector
-  command: arch-chroot /mnt systemctl enable reflector
+  ansible.builtin.command: arch-chroot /mnt systemctl enable reflector

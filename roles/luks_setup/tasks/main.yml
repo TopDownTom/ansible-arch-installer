@@ -1,8 +1,8 @@
 ---
 
-- name: Create LUKS container on {{disk_scheme.device}}{{disk_scheme.crypt_part.partition}}
-  luks_device:
-    device: "/dev/{{disk_scheme.device}}{{disk_scheme.crypt_part.partition}}"
+- name: Create LUKS container on {{ disk_scheme.device }}{{ disk_scheme.crypt_part.partition }}
+  community.crypto.luks_device:
+    device: "/dev/{{ disk_scheme.device }}{{ disk_scheme.crypt_part.partition }}"
     state: "present"
-    name: "{{crypt_mount_name}}"
-    passphrase: "{{crypto_become_pass}}"
+    name: "{{ crypt_mount_name }}"
+    passphrase: "{{ crypto_become_pass }}"

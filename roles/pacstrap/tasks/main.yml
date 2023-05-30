@@ -1,10 +1,10 @@
 ---
 
-- name: set ParallelDownloads in pacman.conf
-  lineinfile:
+- name: Set ParallelDownloads in pacman.conf
+  ansible.builtin.lineinfile:
     path: /etc/pacman.conf
     regexp: '^#ParallelDownloads ='
-    line: "ParallelDownloads = {{parallel_downloads | default(5)}}"
+    line: "ParallelDownloads = {{ parallel_downloads | default(5) }}"
 
-- name: run pacstrap on /mnt. check progress via tail -f /mnt/var/log/pacman.log
-  command: pacstrap /mnt base linux linux-firmware networkmanager stow git grub sudo openssh rsync wget vim make gcc pkg-config fakeroot lvm2 python reflector ansible
+- name: Run pacstrap on /mnt. check progress via tail -f /mnt/var/log/pacman.log
+  ansible.builtin.command: pacstrap /mnt base linux linux-firmware networkmanager stow git grub sudo openssh rsync wget vim make gcc pkg-config fakeroot lvm2 python reflector ansible

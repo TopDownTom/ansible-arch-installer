@@ -1,77 +1,80 @@
 ---
 
-- name: set ParallelDownloads in pacman.conf
-  lineinfile:
+- name: Set ParallelDownloads in pacman.conf
+  ansible.builtin.lineinfile:
     path: /etc/pacman.conf
     regexp: '^#ParallelDownloads ='
-    line: "ParallelDownloads = {{parallel_downloads | default(5)}}"
+    line: "ParallelDownloads = {{ parallel_downloads | default(5) }}"
   become: true
 
-- name: place reflector config file
-  template:
+- name: Place reflector config file
+  ansible.builtin.template:
     src: reflector.j2
     dest: /etc/xdg/reflector/reflector.conf
+    mode: '0644'
+    owner: root
+    group: root
   become: true
 
-- name: start and enable reflector
-  systemd:
+- name: Start and enable reflector
+  ansible.builtin.systemd:
     name: reflector.service
     state: started
     enabled: true
   become: true
 
-- name: get NATIVE package list
-  get_url:
+- name: Get NATIVE package list
+  ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/TopDownTom/dotfiles/master/pkglists/native-pkglist-t470.txt
     dest: /tmp/native-pkglist-t470.txt
     mode: '0660'
 
-- name: get FOREIGN package list
-  get_url:
+- name: Get FOREIGN package list
+  ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/TopDownTom/dotfiles/master/pkglists/foreign-pkglist-t470.txt
     dest: /tmp/foreign-pkglist-t470.txt
     mode: '0664'
 
-- name: capture the NATIVE packages
-  command: cat /tmp/native-pkglist-t470.txt
+- name: Capture the NATIVE packages
+  ansible.builtin.command: cat /tmp/native-pkglist-t470.txt
   register: needed_native_packages
 
-- name: capture the FOREIGN packages
-  command: cat /tmp/foreign-pkglist-t470.txt
+- name: Capture the FOREIGN packages
+  ansible.builtin.command: cat /tmp/foreign-pkglist-t470.txt
   register: needed_foreign_packages
 
-- name: check if yay-bin is installed
-  command: pacman -Q yay
+- name: Check if yay-bin is installed
+  ansible.builtin.command: pacman -Q yay
   register: yay_pkg
   failed_when: yay_pkg.rc > 1
 
 - block: # make if not installed
-  - name: make yay-bin, but dont install
-    command: makepkg -s
+  - name: Make yay-bin, but dont install
+    ansible.builtin.command: makepkg -s
     args:
       chdir: /usr/local/etc/builds/yay
 
-  - name: find the binary zst
-    find:
+  - name: Find the binary zst
+    ansible.builtin.find:
       paths: /usr/local/etc/builds/yay
       patterns: 'yay-bin-*.pkg.tar.zst'
     register: yay_binary
 
-  - name: install yay-bin
-    pacman:
-      name: "{{yay_binary.files.0.path}}"
+  - name: Install yay-bin
+    community.general.pacman:
+      name: "{{ yay_binary.files.0.path }}"
       state: latest
       update_cache: true
     become: true
   when: yay_pkg.rc > 0
 
 # TODO: i hate this
-- name: install needed pacman packages
-  shell: cat /tmp/native-pkglist-t470.txt | pacman -Syu --noconfirm --needed -
+- name: Install needed pacman packages
+  ansible.builtin.shell: cat /tmp/native-pkglist-t470.txt | pacman -Syu --noconfirm --needed -
   become: true
 
 # TODO: i hate this
-- name: install needed AUR packages
-  shell: cat /tmp/foreign-pkglist-t470.txt | yay -Syu --noconfirm --needed -
-  become_user: "{{build_user}}"
+- name: Install needed AUR packages
+  ansible.builtin.shell: cat /tmp/foreign-pkglist-t470.txt | yay -Syu --noconfirm --needed -
+  become_user: "{{ build_user }}"
   become: true

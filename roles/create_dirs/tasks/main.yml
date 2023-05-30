@@ -1,11 +1,11 @@
 ---
 
-- name: create config dirs
-  file:
-    dest: "/usr/local/etc/{{etc_dirs}}"
+- name: Create config dirs
+  ansible.builtin.file:
+    dest: "/usr/local/etc/{{ etc_dirs }}"
     state: directory
-    mode: 0750
-    owner: "{{admin_user}}"
+    mode: '0750'
+    owner: "{{ admin_user }}"
     group: users
   loop:
     - builds
