@@ -3,7 +3,7 @@ become_pass:
 
 # the admin user credentials. this is the ansible_user
 admin_user:
-admin_pass: "{{become_pass}}"
+admin_pass: "{{ become_pass }}"
 
 # a secondary user which has no sudo privileges
 ancillary_user:
