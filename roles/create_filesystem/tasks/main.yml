@@ -31,7 +31,7 @@
     size: "{{ crypt_root_size }}g"
 
 - name: Create a ext4 filesystem on root
-  ansible.builtin.filesystem:
+  community.general.filesystem:
     fstype: ext4
     dev: "/dev/{{ crypt_volume_group_name }}/root"
 
@@ -49,7 +49,7 @@
       size: 100%VG
 
   - name: Create a ext4 filesystem on root
-    ansible.builtin.filesystem:
+    community.general.filesystem:
       fstype: ext4
       dev: "/dev/{{ crypt_volume_group_name }}/home"
   when: lv_home_state.rc == 1
