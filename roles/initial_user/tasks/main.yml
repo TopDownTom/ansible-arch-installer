@@ -29,6 +29,6 @@
   ansible.builtin.copy:
     src: "{{ playbook_dir }}"
     dest: "/mnt/home/{{ admin_user }}/"
-    owner: "{{ admin_user }}"
-    group: "{{ admin_user }}"
+    owner: root
+    group: root
     mode: '0755'
