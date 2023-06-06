@@ -1,0 +1,18 @@
+---
+
+- name: Place Reflector config file
+  ansible.builtin.template:
+    src: reflector.j2
+    dest: /etc/xdg/reflector/reflector.conf
+    mode: '0644'
+    owner: root
+    group: root
+  become: true
+
+- name: Restart and enable reflector service
+  ansible.builtin.systemd:
+    name: reflector.service
+    state: restarted
+    enabled: true
+    daemon-reload: true
+  become: true

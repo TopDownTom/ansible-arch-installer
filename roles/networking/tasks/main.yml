@@ -2,6 +2,10 @@
 
 - name: Enable NetworkManager
   ansible.builtin.command: arch-chroot /mnt systemctl enable NetworkManager
+  register: enable_network_manager_command
+  failed_when: enable_network_manager_command.rc > 1
 
 - name: Enable reflector
   ansible.builtin.command: arch-chroot /mnt systemctl enable reflector
+  register: enable_reflector_command
+  failed_when: enable_reflector_command.rc > 1

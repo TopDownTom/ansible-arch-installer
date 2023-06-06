@@ -7,22 +7,6 @@
     line: "ParallelDownloads = {{ parallel_downloads | default(5) }}"
   become: true
 
-- name: Place reflector config file
-  ansible.builtin.template:
-    src: reflector.j2
-    dest: /etc/xdg/reflector/reflector.conf
-    mode: '0644'
-    owner: root
-    group: root
-  become: true
-
-- name: Start and enable reflector
-  ansible.builtin.systemd:
-    name: reflector.service
-    state: started
-    enabled: true
-  become: true
-
 - name: Get NATIVE package list
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/TopDownTom/dotfiles/master/pkglists/native-pkglist-t470.txt

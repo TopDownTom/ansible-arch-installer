@@ -1,0 +1,6 @@
+---
+
+- name: Set Reflector config and restart the service
+  hosts: all
+  roles:
+    - { role: reflector }
