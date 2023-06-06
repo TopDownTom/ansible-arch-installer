@@ -25,10 +25,16 @@
     group: root
     mode: '0440'
 
-- name: Copy ansible play dir to {{ admin_user }} home
+- name: Clone AAI on the new install
+  ansible.builtin.git:
+    repo: "https://github.com/TopDownTom/ansible-arch-installer.git"
+    dest: "/mnt/home/{{ admin_user }}/arch_install"
+    refspec: '+refs/pull/*:refs/heads/*'
+
+- name: Copy host_vars from current AAI clone to new install
   ansible.builtin.copy:
-    src: "{{ playbook_dir }}"
-    dest: "/mnt/home/{{ admin_user }}/"
+    src: "{{ playbook_dir }}/host_vars"
+    dest: "/mnt/home/{{ admin_user }}/arch_install/"
     owner: root
     group: root
     mode: '0755'
