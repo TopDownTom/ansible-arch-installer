@@ -54,11 +54,11 @@
 
 # TODO: i hate this
 - name: Install needed pacman packages
-  ansible.builtin.shell: cat /tmp/native-pkglist-t470.txt | pacman -Syu --noconfirm --needed -
+  ansible.builtin.shell: cat /tmp/native-pkglist-t470.txt | pacman -Syyyu --noconfirm --needed -
   become: true
 
 # TODO: i hate this
 - name: Install needed AUR packages
-  ansible.builtin.shell: cat /tmp/foreign-pkglist-t470.txt | yay -Syu --noconfirm --needed -
+  ansible.builtin.shell: cat /tmp/foreign-pkglist-t470.txt | yay -Syyyu --noconfirm --needed -
   become_user: "{{ build_user }}"
   become: true

@@ -5,6 +5,7 @@
   roles:
     - { role: create_users }
     - { role: create_dirs }
+    - { role: reflector }
     - { role: repos }
     - { role: package_install }
     - { role: stow }
