@@ -42,6 +42,7 @@
     ansible.builtin.find:
       paths: /usr/local/etc/builds/yay
       patterns: 'yay-bin-*.pkg.tar.zst'
+      excludes: '*debug*'
     register: yay_binary
 
   - name: Install yay-bin
