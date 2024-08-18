@@ -7,54 +7,65 @@
     line: "ParallelDownloads = {{ parallel_downloads | default(5) }}"
   become: true
 
-- name: Get NATIVE package list
+- name: Get NATIVE package list from github for pacman packages
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/TopDownTom/dotfiles/master/pkglists/native-pkglist-t470.txt
     dest: /tmp/native-pkglist-t470.txt
     mode: '0660'
 
-- name: Get FOREIGN package list
-  ansible.builtin.get_url:
-    url: https://raw.githubusercontent.com/TopDownTom/dotfiles/master/pkglists/foreign-pkglist-t470.txt
-    dest: /tmp/foreign-pkglist-t470.txt
-    mode: '0664'
-
 - name: Capture the NATIVE packages
   ansible.builtin.command: cat /tmp/native-pkglist-t470.txt
   register: needed_native_packages
 
-- name: Capture the FOREIGN packages
-  ansible.builtin.command: cat /tmp/foreign-pkglist-t470.txt
-  register: needed_foreign_packages
+- block: # when install_yay_packages
+  - name: Get foreign package list from github for yay packages
+    ansible.builtin.get_url:
+      url: https://raw.githubusercontent.com/TopDownTom/dotfiles/master/pkglists/foreign-pkglist-t470.txt
+      dest: /tmp/foreign-pkglist-t470.txt
+      mode: '0664'
 
-- name: Check if yay-bin is installed
-  ansible.builtin.command: pacman -Q yay
-  register: yay_pkg
-  failed_when: yay_pkg.rc > 1
+  - name: Capture the FOREIGN packages
+    ansible.builtin.command: cat /tmp/foreign-pkglist-t470.txt
+    register: needed_foreign_packages
 
-- block: # make if not installed
-  - name: Make yay-bin, but dont install
-    ansible.builtin.command: makepkg -s
-    args:
-      chdir: /usr/local/etc/builds/yay
+  - name: Check if yay-bin is installed
+    ansible.builtin.command: pacman -Q yay
+    register: yay_pkg
+    failed_when: yay_pkg.rc > 1
 
-  - name: Find the binary zst
-    ansible.builtin.find:
-      paths: /usr/local/etc/builds/yay
-      patterns: 'yay-bin-*.pkg.tar.zst'
-    register: yay_binary
+  - block: # make if not installed
+    - name: Make yay-bin, but dont install
+      ansible.builtin.command: makepkg -s
+      args:
+        chdir: /usr/local/etc/builds/yay
 
-  - name: Install yay-bin
-    community.general.pacman:
-      name: "{{ yay_binary.files.0.path }}"
-      state: latest
-      update_cache: true
-    become: true
-  when: yay_pkg.rc > 0
+    - name: Find the binary zst
+      ansible.builtin.find:
+        paths: /usr/local/etc/builds/yay
+        patterns: 'yay-bin-*.pkg.tar.zst'
+      register: yay_binary
+
+    - name: Install yay-bin
+      community.general.pacman:
+        name: "{{ yay_binary.files.0.path }}"
+        state: latest
+        update_cache: true
+      become: true
+    when: yay_pkg.rc > 0
+  when: packages_install_yay_packages is true
 
 # TODO: i hate this
+#- name: Install needed pacman packages
+#  ansible.builtin.shell: cat /tmp/native-pkglist-t470.txt | pacman -Syyyu --noconfirm --needed -
+#  become: true
+
 - name: Install needed pacman packages
-  ansible.builtin.shell: cat /tmp/native-pkglist-t470.txt | pacman -Syyyu --noconfirm --needed -
+  community.general.pacman:
+    update_cache: true
+    name: "{{ pacman_packages }}"
+  loop: "{{ needed_native_packages }}"
+  loop_control:
+    loop_var: pacman_packages
   become: true
 
 # TODO: i hate this
@@ -62,3 +73,4 @@
   ansible.builtin.shell: cat /tmp/foreign-pkglist-t470.txt | yay -Syyyu --noconfirm --needed -
   become_user: "{{ build_user }}"
   become: true
+  when: packages_install_yay_packages is true
