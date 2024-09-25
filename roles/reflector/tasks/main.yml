@@ -1,34 +1,38 @@
 ---
 
-- name: Ensure reflector config dir exists
-  ansible.builtin.file:
-    path: /etc/xdg/reflector
-    state: directory
-    mode: '0755'
-    owner: root
-    group: root
-  become: true
+- block: # become: true
+  - name: Ensure reflector config dir exists
+    ansible.builtin.file:
+      path: /etc/xdg/reflector
+      state: directory
+      mode: '0755'
+      owner: root
+      group: root
 
-- name: Place Reflector config file
-  ansible.builtin.template:
-    src: reflector.j2
-    dest: /etc/xdg/reflector/reflector.conf
-    mode: '0644'
-    owner: root
-    group: root
-  become: true
+  - name: Place Reflector config file
+    ansible.builtin.template:
+      src: reflector.j2
+      dest: /etc/xdg/reflector/reflector.conf
+      mode: '0644'
+      owner: root
+      group: root
 
-- name: Ensure reflector is installed
-  community.general.pacman:
-    name: reflector
-    state: present
-    update_cache: true
-  become: true
+  - name: Ensure reflector is installed
+    community.general.pacman:
+      name: reflector
+      state: present
+      update_cache: true
 
-- name: Restart and enable reflector service
-  ansible.builtin.systemd:
-    name: reflector.service
-    state: restarted
-    enabled: true
-    daemon-reload: true
+  - name: Restart and enable reflector service
+    ansible.builtin.systemd:
+      name: reflector.service
+      state: restarted
+      enabled: true
+      daemon-reload: true
+
+  - name: Copy the pacman mirrors config to the chroot
+    ansible.builtin.copy:
+      src: /etc/pacman.d/mirrorlist
+      dest: /mnt/etc/pacman.d/mirrorlist
+      remote_src: true
   become: true
